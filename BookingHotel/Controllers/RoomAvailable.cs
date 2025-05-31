@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace BookingHotel.Controllers
 {
@@ -26,11 +27,17 @@ namespace BookingHotel.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateAvailability()
+        public async Task<IActionResult> BookRoom(int roomId)
         {
-            var rooms = _repository.Rooms.Include(r => r.Bookings).ToList();
+            var booking = new Booking
+            {
+                RoomID = roomId,
+                DateFrom = DateTime.Today,
+                DateTo = DateTime.Today.AddDays(1)
+            };
 
+            _repository.CreateBooking(booking); 
+            var rooms = _repository.Rooms.Include(r => r.Bookings).ToList();
             var roomAvailability = rooms.Select(r => new
             {
                 r.RoomID,
@@ -45,5 +52,6 @@ namespace BookingHotel.Controllers
 
             return Ok();
         }
+
     }
 }

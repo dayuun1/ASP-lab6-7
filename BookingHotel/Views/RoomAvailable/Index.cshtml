@@ -7,7 +7,7 @@
     {
         var isAvailable = !room.Bookings.Any(b => b.DateFrom <= DateTime.Today && b.DateTo > DateTime.Today);
         <div id="room-@room.RoomID" class="card m-2 p-3 mt-4">
-            <h2 class="availability @(isAvailable ? "text-success" : "text-danger")">@room.Number</h2>
+            <h2 class="@(isAvailable ? "text-success" : "text-danger")">@room.Number</h2>
             <h5>@room.Class</h5>
             <p class="availability @(isAvailable ? "text-success" : "text-danger")">
                 @(isAvailable ? "Вільний" : "Заброньований")
@@ -35,12 +35,6 @@
                     status.textContent = room.isAvailable ? "Вільний" : "Заброньований";
                     status.className = "availability " + (room.isAvailable ? "text-success" : "text-danger");
                 }
-            });
-        });
-
-        document.getElementById("updateBtn").addEventListener("click", () => {
-            fetch("/RoomAvailable/UpdateAvailability", {
-                method: "POST"
             });
         });
     </script>
