@@ -1,0 +1,27 @@
+﻿@model BookingHotel.Models.ViewModels.ListViewModel
+
+<div class="row">
+    @foreach (var room in Model.Rooms ?? Enumerable.Empty<Room>())
+    {
+        <partial name="RoomSummary" model="room" />
+    }
+
+    <a asp-controller="Booking" asp-action="Create" asp-route-roomId="BookingHotel.Models.Room.RoomID" class="btn btn-success m-2">
+        Забронювати окремо
+    </a>
+    <a asp-controller="Booking" asp-action="Index" class="btn btn-info m-2">
+        Заброньовані номери
+    </a>
+    <a asp-controller="Home" asp-action="Create" class="btn btn-secondary m-2">
+        Створити номер
+    </a>
+</div>
+
+
+<div class="pagination justify-content-center">
+    @for (int i = 1; i <= Model.PagingInfo.TotalPages; i++)
+    {
+        <a href="@Url.Action("Index", new { page = i })"
+           class="page-link @(i == Model.PagingInfo.CurrentPage ? "active" : "")">@i</a>
+    }
+</div>

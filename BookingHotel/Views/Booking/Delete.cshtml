@@ -1,0 +1,17 @@
+﻿@model BookingHotel.Models.Booking
+
+<h2>Видалити бронювання</h2>
+
+<h3>Ви впевнені, що хочете видалити це бронювання?</h3>
+<div>
+    <h4>Ім'я гостя: @Model.GuestName</h4>
+    <p>Дата заїзду: @Model.DateFrom.ToShortDateString()</p>
+    <p>Дата виїзду: @Model.DateTo.ToShortDateString()</p>
+    <p>Номер: @Model.Room?.Number</p>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="BookingID" />
+    <button type="submit" class="btn btn-danger">Видалити</button> |
+    <a asp-action="Index">Скасувати</a>
+</form>

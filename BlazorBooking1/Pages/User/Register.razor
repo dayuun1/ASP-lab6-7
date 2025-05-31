@@ -1,0 +1,60 @@
+﻿@page "/User/Register"
+@inject HttpClient Http
+@using BookingHotel.Models
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject AuthStateService AuthState
+
+<h3>Реєстрація</h3>
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<EditForm Model="@registerModel" OnValidSubmit="Send">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <InputText id="email" class="form-control" @bind-Value="registerModel.Email" />
+    </div>
+    <div class="form-group">
+        <label for="password">Пароль:</label>
+        <InputText id="password" type="password" class="form-control" @bind-Value="registerModel.Password" />
+    </div>
+    <div class="form-group">
+        <label for="confirmPassword">Підтвердження пароля:</label>
+        <InputText id="confirmPassword" type="password" class="form-control" @bind-Value="registerModel.ConfirmPassword" />
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Зареєструватись</button>
+</EditForm>
+
+<p>Вже маєте акаунт? <a href="/User/Login">Увійти</a></p>
+
+@code {
+    private UserRegistrationModel registerModel = new();
+    private string error = string.Empty;
+
+    private async Task Send()
+    {
+        var response = await Http.PostAsJsonAsync("api/Account/register", registerModel);
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<TokenResponse>();
+            await LocalStorage.SetItemAsync("authToken", result!.Token);
+            AuthState.SetLoginState(true);
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            error = await response.Content.ReadAsStringAsync();
+        }
+    }
+
+    public class TokenResponse
+    {
+        public string Token { get; set; } = string.Empty;
+        public DateTime Expiration { get; set; }
+    }
+}

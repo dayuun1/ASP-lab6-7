@@ -1,0 +1,32 @@
+﻿@page "/Rooms"
+@inject HttpClient Http
+@using BookingHotel.Models
+
+@if (rooms == null)
+{
+    <p><em>Завантаження...</em></p>
+}
+else if (!rooms.Any())
+{
+    <p>Кімнати не знайдені.</p>
+}
+else
+{
+    <div class="list-group m-2">
+        @foreach (var room in rooms)
+        {
+            <a href="@($"/Room/{room.RoomID}")" class="list-group-item list-group-item-action">
+                Кімната №@room.Number - @room.Class - @room.Price ₴
+            </a>
+        }
+    </div>
+}
+
+@code {
+    private List<Room>? rooms;
+
+    protected override async Task OnInitializedAsync()
+    {
+        rooms = await Http.GetFromJsonAsync<List<Room>>($"{Http.BaseAddress}api/RoomsApi");
+    }
+}

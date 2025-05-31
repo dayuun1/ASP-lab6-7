@@ -1,0 +1,32 @@
+﻿@page "/Room/{id:int}"
+@inject HttpClient Http
+@using BookingHotel.Models
+
+@if (room == null)
+{
+    <p><em>Завантаження...</em></p>
+}
+else
+{
+    <div class="card m-2">
+        <div class="card-body">
+            <h5 class="card-title">Кімната №@room.Number</h5>
+            <p class="card-text"><strong>Опис:</strong> @room.Description</p>
+            <p class="card-text"><strong>Ціна:</strong> @room.Price ₴</p>
+            <p class="card-text"><strong>Клас:</strong> @room.Class</p>
+            <p class="card-text"><strong>Кількість бронювань:</strong> @room.Bookings?.Count ?? 0</p>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Room? room;
+
+    protected override async Task OnInitializedAsync()
+    {
+        room = await Http.GetFromJsonAsync<Room>($"{Http.BaseAddress}api/RoomsApi/{Id}");
+    }
+}

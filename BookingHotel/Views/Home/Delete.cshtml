@@ -1,0 +1,17 @@
+﻿@model BookingHotel.Models.Room
+
+<h2>Видалити номер</h2>
+
+<h3>Ви впевнені, що хочете видалити цей номер?</h3>
+<div>
+    <h4>Номер: @Model.Number</h4>
+    <p>Опис: @Model.Description</p>
+    <p>Ціна: @Model.Price</p>
+    <p>Клас: @Model.Class</p>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="RoomID" />
+    <button type="submit" class="btn btn-danger">Видалити</button> |
+    <a asp-action="Index">Скасувати</a>
+</form>

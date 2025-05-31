@@ -1,0 +1,27 @@
+﻿@model AdminCreationModel
+
+<h2>Create New Administrator</h2>
+
+<form asp-action="CreateAdmin" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="NewAdminEmail"></label>
+        <input asp-for="NewAdminEmail" class="form-control" />
+        <span asp-validation-for="NewAdminEmail" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="NewAdminPassword"></label>
+        <input asp-for="NewAdminPassword" type="password" class="form-control" />
+        <span asp-validation-for="NewAdminPassword" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ConfirmNewAdminPassword"></label>
+        <input asp-for="ConfirmNewAdminPassword" type="password" class="form-control" />
+        <span asp-validation-for="ConfirmNewAdminPassword" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Admin</button>
+</form>

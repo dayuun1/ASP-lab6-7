@@ -1,0 +1,40 @@
+﻿@model List<BookingHotel.Models.Booking>
+
+<h2>Список бронювань</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Додати нове бронювання</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ім'я гостя</th>
+            <th>Дата заїзду</th>
+            <th>Дата виїзду</th>
+            <th>Номер</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var booking in Model)
+        {
+            <tr>
+                <td>@booking.GuestName</td>
+                <td>@booking.DateFrom.ToShortDateString()</td>
+                <td>@booking.DateTo.ToShortDateString()</td>
+                <td>@booking.Room?.Number</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@booking.BookingID">Редагувати</a> |
+                    <a asp-action="Details" asp-route-id="@booking.BookingID">Деталі</a> |
+                    <a asp-action="Delete" asp-route-id="@booking.BookingID">Видалити</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="Home" asp-action="Index" class="btn btn-success m-3">
+    На головну
+</a>
+

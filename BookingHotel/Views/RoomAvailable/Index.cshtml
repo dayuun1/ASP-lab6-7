@@ -1,0 +1,47 @@
+﻿@model IEnumerable<Room>
+
+<h2 class="text-center">Вільні номери</h2>
+
+<div id="roomList" class="mt-4">
+    @foreach (var room in Model)
+    {
+        var isAvailable = !room.Bookings.Any(b => b.DateFrom <= DateTime.Today && b.DateTo > DateTime.Today);
+        <div id="room-@room.RoomID" class="card m-2 p-3 mt-4">
+            <h2 class="availability @(isAvailable ? "text-success" : "text-danger")">@room.Number</h2>
+            <h5>@room.Class</h5>
+            <p class="availability @(isAvailable ? "text-success" : "text-danger")">
+                @(isAvailable ? "Вільний" : "Заброньований")
+            </p>
+        </div>
+    }
+</div>
+
+<button id="updateBtn" class="btn btn-primary mt-3">Оновити</button>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.7/dist/browser/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hub")
+            .build();
+
+        connection.start().catch(err => console.error(err.toString()));
+
+        connection.on("UpdateRoomAvailability", function (roomData) {
+            roomData.forEach(room => {
+                const roomDiv = document.getElementById(`room-${room.roomID}`);
+                if (roomDiv) {
+                    const status = roomDiv.querySelector(".availability");
+                    status.textContent = room.isAvailable ? "Вільний" : "Заброньований";
+                    status.className = "availability " + (room.isAvailable ? "text-success" : "text-danger");
+                }
+            });
+        });
+
+        document.getElementById("updateBtn").addEventListener("click", () => {
+            fetch("/RoomAvailable/UpdateAvailability", {
+                method: "POST"
+            });
+        });
+    </script>
+}

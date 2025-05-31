@@ -1,0 +1,16 @@
+﻿@model IEnumerable<string>
+@{
+    string selectedClass = ViewBag.SelectedClass as string;
+}
+
+<ul class="list-group">
+    @foreach (var roomClass in Model)
+    {
+        var isActive = roomClass == (string)ViewBag.SelectedClass ? "active" : "";
+        <li class="list-group-item @isActive">
+            <a class="text-decoration-none d-block text-dark" href="@Url.Action("Index", new { roomClass = roomClass })">
+                @roomClass
+            </a>
+        </li>
+    }
+</ul>

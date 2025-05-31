@@ -1,0 +1,61 @@
+﻿@page "/Booking/Add"
+@inject HttpClient Http
+@using BookingHotel.Models
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager Navigation
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <p>Помилка: @error</p>
+}
+
+<EditForm Model="@booking" OnValidSubmit="Create">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="d-flex justify-content-center align-items-center flex-column">
+        <table>
+            <tr>
+                <td><label for="guestName">Ім’я гостя:</label></td>
+                <td><InputText id="guestName" @bind-Value="booking.GuestName" /></td>
+            </tr>
+            <tr>
+                <td><label for="dateFrom">Дата заїзду:</label></td>
+                <td><InputDate id="dateFrom" @bind-Value="booking.DateFrom" /></td>
+            </tr>
+            <tr>
+                <td><label for="dateTo">Дата виїзду:</label></td>
+                <td><InputDate id="dateTo" @bind-Value="booking.DateTo" /></td>
+            </tr>
+            <tr>
+                <td><label for="roomId">ID кімнати:</label></td>
+                <td><InputNumber id="roomId" @bind-Value="booking.RoomID" /></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center"><input type="submit" value="Забронювати" class="btn btn-primary" /></td>
+            </tr>
+        </table>
+    </div>
+</EditForm>
+
+@code {
+    private Booking booking = new();
+    private string error = string.Empty;
+
+    private async Task Create()
+    {
+        var response = await Http.PostAsJsonAsync($"{Http.BaseAddress}api/Bookings", booking);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            error = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(error))
+            {
+                error = "Помилка при створенні бронювання.";
+            }
+        }
+    }
+}

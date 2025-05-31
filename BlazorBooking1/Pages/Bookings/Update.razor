@@ -1,0 +1,107 @@
+﻿@page "/Booking/Update/{id:int}"
+@inject HttpClient Http
+@using BookingHotel.Models
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager Navigation
+
+@if (oldBooking == null)
+{
+    <p><em>Завантаження...</em></p>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <p>Помилка: @error</p>
+    }
+    <EditForm Model="@newBooking" OnValidSubmit="UpdateBooking">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="d-flex justify-content-center align-items-center flex-column">
+            <table>
+                <tr>
+                    <td><label for="guestName">Ім’я гостя:</label></td>
+                    <td><InputText id="guestName" @bind-Value="newBooking.GuestName" /></td>
+                </tr>
+                <tr>
+                    <td><label for="dateFrom">Дата заїзду:</label></td>
+                    <td><InputDate id="dateFrom" @bind-Value="newBooking.DateFrom" /></td>
+                </tr>
+                <tr>
+                    <td><label for="dateTo">Дата виїзду:</label></td>
+                    <td><InputDate id="dateTo" @bind-Value="newBooking.DateTo" /></td>
+                </tr>
+                <tr>
+                    <td><label for="roomId">ID кімнати:</label></td>
+                    <td><InputNumber id="roomId" @bind-Value="newBooking.RoomID" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center"><input type="submit" value="Оновити" class="btn btn-primary" /></td>
+                </tr>
+            </table>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Booking? oldBooking;
+    private Booking newBooking = new();
+    private string error = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        oldBooking = await Http.GetFromJsonAsync<Booking>($"{Http.BaseAddress}api/Bookings/{Id}");
+        if (oldBooking != null)
+        {
+            Reset();
+        }
+    }
+
+    private async Task UpdateBooking()
+    {
+        var response = await Http.PutAsJsonAsync($"{Http.BaseAddress}api/Bookings/{newBooking.BookingID}", newBooking);
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            error = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(error))
+            {
+                error = "Не вдалося оновити бронювання.";
+            }
+            Reset();
+        }
+    }
+
+    private void Reset()
+    {
+        newBooking.BookingID = oldBooking.BookingID;
+        newBooking.GuestName = oldBooking.GuestName;
+        newBooking.DateFrom = oldBooking.DateFrom;
+        newBooking.DateTo = oldBooking.DateTo;
+        newBooking.RoomID = oldBooking.RoomID;
+    }
+
+    private class Booking
+    {
+        public long BookingID { get; set; }
+
+        [Required(ErrorMessage = "Вкажіть ім’я гостя")]
+        [StringLength(100, ErrorMessage = "Ім’я занадто довге")]
+        public string GuestName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Вкажіть дату заїзду")]
+        public DateTime DateFrom { get; set; }
+
+        [Required(ErrorMessage = "Вкажіть дату виїзду")]
+        public DateTime DateTo { get; set; }
+
+        [Required]
+        public long RoomID { get; set; }
+    }
+}

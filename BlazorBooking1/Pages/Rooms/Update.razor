@@ -1,0 +1,112 @@
+﻿@page "/Room/Update/{id:int}"
+@inject HttpClient Http
+@using BookingHotel.Models
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager Navigation
+
+@if (oldRoom == null)
+{
+    <p><em>Завантаження...</em></p>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <p>Помилка: @error</p>
+    }
+    <EditForm Model="@newRoom" OnValidSubmit="UpdateRoom">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="d-flex justify-content-center align-items-center flex-column">
+            <table>
+                <tr>
+                    <td><label for="number">Номер:</label></td>
+                    <td><InputText id="number" @bind-Value="newRoom.Number" /></td>
+                </tr>
+                <tr>
+                    <td><label for="description">Опис:</label></td>
+                    <td><InputTextArea id="description" @bind-Value="newRoom.Description" /></td>
+                </tr>
+                <tr>
+                    <td><label for="price">Ціна:</label></td>
+                    <td><InputNumber id="price" @bind-Value="newRoom.Price" /></td>
+                </tr>
+                <tr>
+                    <td><label for="class">Клас:</label></td>
+                    <td><InputText id="class" @bind-Value="newRoom.Class" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center">
+                        <input type="submit" value="Оновити" class="btn btn-primary" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Room? oldRoom;
+    private Room newRoom = new();
+    private string error = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        oldRoom = await Http.GetFromJsonAsync<Room>($"{Http.BaseAddress}api/RoomsApi/{Id}");
+        if (oldRoom != null)
+        {
+            Reset();
+        }
+    }
+
+    private async Task UpdateRoom()
+    {
+        var response = await Http.PutAsJsonAsync($"{Http.BaseAddress}api/RoomsApi", newRoom);
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            error = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(error))
+            {
+                error = "Не вдалося оновити кімнату.";
+            }
+            Reset();
+        }
+    }
+
+    private void Reset()
+    {
+        newRoom.RoomID = oldRoom.RoomID;
+        newRoom.Number = oldRoom.Number;
+        newRoom.Description = oldRoom.Description;
+        newRoom.Price = oldRoom.Price;
+        newRoom.Class = oldRoom.Class;
+    }
+
+    private class Room
+    {
+        public long RoomID { get; set; }
+
+        [Required(ErrorMessage = "Вкажіть номер кімнати")]
+        [StringLength(10, ErrorMessage = "Номер кімнати занадто довгий")]
+        public string Number { get; set; } = String.Empty;
+
+        [Required(ErrorMessage = "Вкажіть опис кімнати")]
+        [StringLength(500, ErrorMessage = "Опис занадто довгий")]
+        public string Description { get; set; } = String.Empty;
+
+        [Required(ErrorMessage = "Вкажіть ціну")]
+        [Range(0.01, 100000, ErrorMessage = "Ціна має бути в діапазоні від 0.01 до 100000")]
+        public decimal Price { get; set; }
+
+        [Required(ErrorMessage = "Вкажіть клас кімнати")]
+        [StringLength(50, ErrorMessage = "Клас занадто довгий")]
+        public string Class { get; set; } = String.Empty;
+    }
+}

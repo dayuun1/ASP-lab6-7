@@ -1,0 +1,62 @@
+﻿@page "/Room/Add"
+@inject HttpClient Http
+@using BookingHotel.Models
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager Navigation
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <p>Помилка: @error</p>
+}
+
+<EditForm Model="@room" OnValidSubmit="Create">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="d-flex justify-content-center align-items-center flex-column">
+        <table>
+            <tr>
+                <td><label for="number">Номер:</label></td>
+                <td><InputText id="number" @bind-Value="room.Number" /></td>
+            </tr>
+            <tr>
+                <td><label for="description">Опис:</label></td>
+                <td><InputTextArea id="description" @bind-Value="room.Description" /></td>
+            </tr>
+            <tr>
+                <td><label for="price">Ціна:</label></td>
+                <td><InputNumber id="price" @bind-Value="room.Price" /></td>
+            </tr>
+            <tr>
+                <td><label for="class">Клас:</label></td>
+                <td><InputText id="class" @bind-Value="room.Class" /></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center">
+                    <input type="submit" value="Додати" class="btn btn-primary" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</EditForm>
+
+@code {
+    private Room room = new();
+    private string error = string.Empty;
+
+    private async Task Create()
+    {
+        var response = await Http.PostAsJsonAsync($"{Http.BaseAddress}api/RoomsApi", room);
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            error = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(error))
+            {
+                error = "Помилка при створенні кімнати.";
+            }
+        }
+    }
+}

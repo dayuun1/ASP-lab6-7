@@ -1,0 +1,31 @@
+﻿@model BookingHotel.Models.Booking
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="GuestName"></label>
+        <input asp-for="GuestName" class="form-control" />
+        <span asp-validation-for="GuestName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="DateFrom"></label>
+        <input asp-for="DateFrom" type="date" class="form-control" />
+        <span asp-validation-for="DateFrom" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="DateTo"></label>
+        <input asp-for="DateTo" type="date" class="form-control" />
+        <span asp-validation-for="DateTo" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="RoomID">Номер</label>
+        <select asp-for="RoomID" class="form-control" asp-items="@(new SelectList(ViewBag.Rooms, "RoomID", "Number"))"></select>
+        <span asp-validation-for="RoomID" class="text-danger"></span>
+    </div>
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <button type="submit" class="btn btn-primary">Зберегти</button>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-success m-3">
+        На головну
+    </a>
+</form>

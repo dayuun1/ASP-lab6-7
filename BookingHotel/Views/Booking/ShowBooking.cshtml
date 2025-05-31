@@ -1,0 +1,27 @@
+﻿@model List<BookingInfo>
+
+<h2>Не оплачені бронювання</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Номер</th>
+            <th>Гість</th>
+            <th>З</th>
+            <th>По</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.RoomID</td>
+                <td>@item.GuestName</td>
+                <td>@item.DateFrom.ToShortDateString()</td>
+                <td>@item.DateTo.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a class="btn btn-danger" asp-action="ClearBooking">Очистити</a>
+<a class="btn btn-light" asp-action="Pay">Оплатити</a>

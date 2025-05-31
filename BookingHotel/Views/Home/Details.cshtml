@@ -1,0 +1,15 @@
+﻿@model BookingHotel.Models.Room
+
+<h2>Деталі номера</h2>
+
+<div>
+    <h4>Номер: @Model.Number</h4>
+    <p>Опис: @Model.Description</p>
+    <p>Ціна: @Model.Price</p>
+    <p>Клас: @Model.Class</p>
+</div>
+
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.RoomID">Редагувати</a> |
+    <a asp-action="Index">Повернутися до списку</a>
+</p>
